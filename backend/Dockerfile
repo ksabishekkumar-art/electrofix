@@ -2,8 +2,7 @@ FROM eclipse-temurin:17-jdk
 
 WORKDIR /app
 
-# Copy the backend folder contents into /app
-COPY backend /app
+COPY . /app
 
 RUN chmod +x gradlew
 
