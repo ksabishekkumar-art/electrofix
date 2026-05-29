@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Services | ElectroFix</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .booking-form {
+            display: none;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+    </style>
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+    <div id="particles-js"></div>
+    <nav>
+        <div class="logo">Electro<span>Fix</span></div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="services.html" class="active">Services</a></li>
+            <li><a href="portfolio.html">Portfolio</a></li>
+            <li><a href="reviews.html">Reviews</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="tracking.html">Track Booking</a></li>
+        </ul>
+        <div class="hamburger"><i class="fas fa-bars"></i></div>
+    </nav>
+    <div class="header-spacer"></div>
+
+    <section>
+        <h2 class="section-title">All <span>Services</span></h2>
+        <div id="all-services-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+            <!-- Dynamic services load here -->
+        </div>
+    </section>
+
+    <div class="floating-btns">
+        <a href="https://wa.me/916379012099" target="_blank" class="float-btn whatsapp-btn floating">
+            <i class="fab fa-whatsapp"></i>
+        </a>
+        <a href="tel:+916379012099" class="float-btn call-btn floating" style="animation-delay: 0.5s;">
+            <i class="fas fa-phone-alt"></i>
+        </a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const container = document.getElementById('all-services-container');
+            const services = await api.getServices();
+            container.innerHTML = services.map(s => `
+                <div class="glass-card reveal">
+                    ${s.imageUrl ? `<img src="${s.imageUrl}" alt="${s.name}" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px; margin-bottom: 15px;">` : ''}
+                    <h3>${s.name}</h3>
+                    <p style="color:var(--text-muted); margin: 10px 0;">${s.description}</p>
+                    <p style="color:var(--accent); font-weight:bold; font-size: 1.2rem;">₹${s.price}</p>
+                    <button class="btn ripple-btn" style="margin-top: 15px; width: 100%;" onclick="toggleBookingForm(${s.id})">Book Now</button>
+                    
+                    <div id="booking-form-${s.id}" class="booking-form">
+                        <form onsubmit="submitBooking(event, ${s.id}, '${s.name.replace(/'/g, "\\'")}')">
+                            <input type="text" id="name-${s.id}" class="form-control" placeholder="Your Name" required>
+                            <input type="text" id="phone-${s.id}" class="form-control" placeholder="Phone Number" required>
+                            <input type="text" id="address-${s.id}" class="form-control" placeholder="Address" required>
+                            <textarea id="msg-${s.id}" class="form-control" placeholder="Additional Message (Optional)" rows="2"></textarea>
+                            <button type="submit" class="btn ripple-btn" style="width: 100%; margin-top: 10px;">Confirm Booking</button>
+                        </form>
+                    </div>
+                </div>
+            `).join('');
+        });
+
+        function toggleBookingForm(id) {
+            const form = document.getElementById(`booking-form-${id}`);
+            form.style.display = form.style.display === 'block' ? 'none' : 'block';
+        }
+
+        async function submitBooking(e, id, serviceName) {
+            e.preventDefault();
+            const data = {
+                customerName: document.getElementById(`name-${id}`).value,
+                phone: document.getElementById(`phone-${id}`).value,
+                address: document.getElementById(`address-${id}`).value,
+                message: document.getElementById(`msg-${id}`).value,
+                selectedService: serviceName
+            };
+            try {
+                const res = await api.createBooking(data);
+                alert('Booking submitted successfully! Your Booking ID is ' + res.id);
+                toggleBookingForm(id);
+                e.target.reset();
+            } catch (err) {
+                alert('Error submitting booking.');
+            }
+        }
+    </script>
+</body>
+</html>

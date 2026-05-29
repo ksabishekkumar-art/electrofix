@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reviews | ElectroFix</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .star-rating i { color: #555; cursor: pointer; font-size: 24px; transition: 0.2s; }
+        .star-rating i.active, .star-rating i:hover { color: var(--accent); }
+    </style>
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+    <div id="particles-js"></div>
+    <nav>
+        <div class="logo">Electro<span>Fix</span></div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="portfolio.html">Portfolio</a></li>
+            <li><a href="reviews.html" class="active">Reviews</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="tracking.html">Track Booking</a></li>
+        </ul>
+        <div class="hamburger"><i class="fas fa-bars"></i></div>
+    </nav>
+    <div class="header-spacer"></div>
+
+    <section>
+        <h2 class="section-title">Customer <span>Reviews</span></h2>
+        
+        <div class="glass-card" style="max-width: 600px; margin: 0 auto 50px;">
+            <h3 style="margin-bottom: 20px;">Write a Review</h3>
+            <form id="review-form">
+                <input type="text" id="review-name" class="form-control" placeholder="Your Name" required>
+                <div class="star-rating" style="margin-bottom: 20px;">
+                    <span style="margin-right: 10px;">Rating: </span>
+                    <i class="fas fa-star" data-val="1"></i>
+                    <i class="fas fa-star" data-val="2"></i>
+                    <i class="fas fa-star" data-val="3"></i>
+                    <i class="fas fa-star" data-val="4"></i>
+                    <i class="fas fa-star" data-val="5"></i>
+                    <input type="hidden" id="review-rating" required>
+                </div>
+                <textarea id="review-message" class="form-control" placeholder="Your experience..." rows="3" required></textarea>
+                <label>Profile Photo (optional):</label>
+                <input type="file" id="review-image" class="form-control" accept="image/*">
+                <button type="submit" class="btn ripple-btn" style="width: 100%;">Submit Review</button>
+                <p id="review-status" style="margin-top: 15px; color: #25D366; display: none;">Review submitted! It will appear once approved by admin.</p>
+            </form>
+        </div>
+
+        <div id="reviews-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+            <!-- Dynamic reviews load here -->
+        </div>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        let currentRating = 0;
+        document.querySelectorAll('.star-rating i').forEach(star => {
+            star.addEventListener('click', (e) => {
+                currentRating = parseInt(e.target.getAttribute('data-val'));
+                document.getElementById('review-rating').value = currentRating;
+                document.querySelectorAll('.star-rating i').forEach(s => {
+                    if (parseInt(s.getAttribute('data-val')) <= currentRating) s.classList.add('active');
+                    else s.classList.remove('active');
+                });
+            });
+        });
+
+        document.getElementById('review-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentRating) { alert("Please select a star rating."); return; }
+            
+            const formData = new FormData();
+            formData.append('customerName', document.getElementById('review-name').value);
+            formData.append('rating', currentRating);
+            formData.append('message', document.getElementById('review-message').value);
+            const img = document.getElementById('review-image').files[0];
+            if (img) formData.append('image', img);
+            
+            try {
+                await api.createReview(formData);
+                document.getElementById('review-form').reset();
+                document.querySelectorAll('.star-rating i').forEach(s => s.classList.remove('active'));
+                currentRating = 0; document.getElementById('review-rating').value = '';
+                document.getElementById('review-status').style.display = 'block';
+                setTimeout(() => document.getElementById('review-status').style.display = 'none', 5000);
+            } catch (error) {
+                alert("Failed to submit review.");
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const container = document.getElementById('reviews-container');
+            container.innerHTML = '<p>Loading reviews...</p>';
+            try {
+                const reviews = await api.getReviews();
+                const approved = reviews.filter(r => r.approved);
+                if (approved.length === 0) {
+                    container.innerHTML = '<p>No reviews yet. Be the first to write one!</p>';
+                    return;
+                }
+                container.innerHTML = approved.map((r, index) => `
+                    <div class="glass-card reveal hover-glow" style="animation-delay: ${index * 0.1}s; display:flex; flex-direction:column; align-items:center; text-align:center;">
+                        <img src="${r.profileImage ? r.profileImage : 'https://via.placeholder.com/80'}" style="width:80px; height:80px; border-radius:50%; object-fit:cover; margin-bottom:15px; border:2px solid var(--accent);">
+                        <h4>${r.customerName}</h4>
+                        <span style="font-size:12px; color:var(--text-muted); margin-bottom:5px;">${window.formatDate ? window.formatDate(r.createdAt) : ''}</span>
+                        <div style="color:var(--accent); margin:10px 0;">
+                            ${Array(r.rating).fill('<i class="fas fa-star"></i>').join('')}
+                            ${Array(5 - r.rating).fill('<i class="far fa-star"></i>').join('')}
+                        </div>
+                        <p style="color:var(--text-muted); font-style:italic;">"${r.message}"</p>
+                    </div>
+                `).join('');
+                setTimeout(() => { if(window.initAnimations) window.initAnimations(); }, 100);
+            } catch (error) {
+                container.innerHTML = '<p>Error loading reviews.</p>';
+            }
+        });
+    </script>
+</body>
+</html>

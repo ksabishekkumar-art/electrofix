@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio | ElectroFix</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+    <div id="particles-js"></div>
+    <nav>
+        <div class="logo">Electro<span>Fix</span></div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="portfolio.html" class="active">Portfolio</a></li>
+            <li><a href="reviews.html">Reviews</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="tracking.html">Track Booking</a></li>
+        </ul>
+        <div class="hamburger"><i class="fas fa-bars"></i></div>
+    </nav>
+    <div class="header-spacer"></div>
+
+    <section>
+        <h2 class="section-title">Our Past <span>Projects</span></h2>
+        <div id="portfolio-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+            <!-- Dynamic portfolio loads here -->
+        </div>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const container = document.getElementById('portfolio-container');
+            container.innerHTML = '<p>Loading portfolio...</p>';
+            try {
+                const projects = await api.getPortfolio();
+                if (projects.length === 0) {
+                    container.innerHTML = '<p>No projects to display.</p>';
+                    return;
+                }
+                container.innerHTML = projects.map((p, index) => {
+                    let mediaHtml = '';
+                    if (p.imageUrls && p.imageUrls.length > 0) {
+                        mediaHtml += '<div class="portfolio-slider">';
+                        p.imageUrls.forEach(url => {
+                            mediaHtml += `<img src="${url}" style="height:150px; width:auto;" onclick="window.openMediaModal('image', '${url}')">`;
+                        });
+                        mediaHtml += '</div>';
+                    } else if (p.imageUrl) {
+                        mediaHtml += `<img src="${p.imageUrl}" style="width:100%; height:200px; object-fit:cover; border-radius:8px; margin-bottom:15px; cursor:pointer;" onclick="window.openMediaModal('image', '${p.imageUrl}')">`;
+                    }
+                    
+                    if (p.videoUrl) {
+                        mediaHtml += `<div style="margin-top:10px;"><button class="btn btn-outline" style="width:100%; padding:5px;" onclick="window.openMediaModal('video', '${p.videoUrl}')"><i class="fas fa-play"></i> Watch Project Video</button></div>`;
+                    }
+
+                    return `
+                    <div class="glass-card reveal hover-glow" style="animation-delay: ${index * 0.1}s">
+                        ${mediaHtml}
+                        <div style="margin-top: 15px; display:flex; justify-content:space-between;">
+                            <span style="background:rgba(255, 180, 0, 0.2); color:var(--accent); padding:4px 8px; border-radius:4px; font-size:12px;">${p.category}</span>
+                            <span style="color:var(--text-muted); font-size:12px;">${window.formatDate ? window.formatDate(p.createdAt) : ''}</span>
+                        </div>
+                        <h3 style="margin: 10px 0;">${p.title}</h3>
+                        <p style="color:var(--text-muted);">${p.description}</p>
+                    </div>
+                `}).join('');
+                setTimeout(() => { if(window.initAnimations) window.initAnimations(); }, 100);
+            } catch (error) {
+                container.innerHTML = '<p>Error loading portfolio.</p>';
+            }
+        });
+    </script>
+</body>
+</html>

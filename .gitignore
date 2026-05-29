@@ -1,0 +1,41 @@
+# Gradle
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+
+# Node
+node_modules/
+npm-debug.log
+
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# Eclipse
+.classpath
+.project
+.settings/
+bin/
+
+# Environment Variables
+.env
+.env.local
+
+# Logs
+logs/
+*.log
+
+# File Uploads (Ignore user uploaded files, keep folder structure if needed)
+uploads/
+!uploads/.gitkeep
+
+# macOS
+.DS_Store
+
+# Temporary Files
+*.swp
+*~

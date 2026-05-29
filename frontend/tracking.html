@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Booking | ElectroFix</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+    <div id="particles-js"></div>
+    <nav>
+        <div class="logo">Electro<span>Fix</span></div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="portfolio.html">Portfolio</a></li>
+            <li><a href="reviews.html">Reviews</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="tracking.html" class="active">Track Booking</a></li>
+        </ul>
+        <div class="hamburger"><i class="fas fa-bars"></i></div>
+    </nav>
+    <div class="header-spacer"></div>
+
+    <section>
+        <h2 class="section-title">SYSTEM: <span>TRACKING</span></h2>
+        
+        <div id="tracking-search" class="glass-card reveal" style="max-width: 500px; margin: 0 auto; padding: 30px; text-align: center;">
+            <h3 style="color:var(--arc-blue); margin-bottom: 20px;">ACCESS BOOKING DATA</h3>
+            <form id="tracking-form" onsubmit="startTracking(event)">
+                <input type="number" id="track-id" class="form-control" placeholder="Booking ID" required>
+                <input type="text" id="track-phone" class="form-control" placeholder="Phone Number" required>
+                <button type="submit" class="btn ripple-btn" style="width: 100%;"><i class="fas fa-search"></i> INITIATE SCAN</button>
+            </form>
+            <p id="track-error" style="color:var(--stark-red); margin-top:15px; display:none;"></p>
+        </div>
+
+        <div id="tracking-result" class="glass-card reveal" style="display: none; max-width: 800px; margin: 40px auto; padding: 30px;">
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--accent); padding-bottom: 20px; margin-bottom: 30px; flex-wrap: wrap; gap: 15px;">
+                <div>
+                    <h3 style="color:var(--arc-blue);">BOOKING #<span id="res-id"></span></h3>
+                    <p style="color:var(--text-muted);" id="res-service"></p>
+                </div>
+                <div style="text-align: right;">
+                    <p><strong>ETA:</strong> <span id="res-eta" style="color:var(--iron-gold);"></span></p>
+                    <p><strong>Technician:</strong> <span id="res-tech" style="color:var(--neon-cyan);"></span></p>
+                </div>
+            </div>
+
+            <div class="timeline-container">
+                <div class="timeline-step" id="step-pending">
+                    <div class="timeline-icon"><i class="fas fa-clock"></i></div>
+                    <div class="timeline-content">
+                        <h4>Pending</h4>
+                        <p>Request received by server.</p>
+                    </div>
+                </div>
+                <div class="timeline-line"></div>
+                
+                <div class="timeline-step" id="step-confirmed">
+                    <div class="timeline-icon"><i class="fas fa-check"></i></div>
+                    <div class="timeline-content">
+                        <h4>Confirmed</h4>
+                        <p>Booking approved.</p>
+                    </div>
+                </div>
+                <div class="timeline-line"></div>
+
+                <div class="timeline-step" id="step-technician-assigned">
+                    <div class="timeline-icon"><i class="fas fa-user-cog"></i></div>
+                    <div class="timeline-content">
+                        <h4>Technician Assigned</h4>
+                        <p>Expert dispatched.</p>
+                    </div>
+                </div>
+                <div class="timeline-line"></div>
+
+                <div class="timeline-step" id="step-on-the-way">
+                    <div class="timeline-icon"><i class="fas fa-truck"></i></div>
+                    <div class="timeline-content">
+                        <h4>On The Way</h4>
+                        <p>Heading to location.</p>
+                    </div>
+                </div>
+                <div class="timeline-line"></div>
+
+                <div class="timeline-step" id="step-work-started">
+                    <div class="timeline-icon"><i class="fas fa-tools"></i></div>
+                    <div class="timeline-content">
+                        <h4>Work Started</h4>
+                        <p>Diagnosing & repairing.</p>
+                    </div>
+                </div>
+                <div class="timeline-line"></div>
+
+                <div class="timeline-step" id="step-completed">
+                    <div class="timeline-icon"><i class="fas fa-star"></i></div>
+                    <div class="timeline-content">
+                        <h4>Completed</h4>
+                        <p>Service successfully finished.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="step-cancelled" style="display:none; text-align:center; margin-top:20px;">
+                <h3 style="color:var(--stark-red);"><i class="fas fa-times-circle"></i> BOOKING CANCELLED</h3>
+            </div>
+
+            <div style="text-align: center; margin-top: 30px;">
+                <p style="color:var(--text-muted); font-size: 0.9em;"><i class="fas fa-sync fa-spin"></i> Live Tracking Active (Auto-updates every 15s)</p>
+            </div>
+        </div>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        let trackingInterval;
+        let currentStatus = "";
+
+        async function startTracking(e) {
+            e.preventDefault();
+            const id = document.getElementById('track-id').value;
+            const phone = document.getElementById('track-phone').value;
+            document.getElementById('track-error').style.display = 'none';
+
+            await fetchAndRenderStatus(id, phone, true);
+
+            if(trackingInterval) clearInterval(trackingInterval);
+            trackingInterval = setInterval(() => fetchAndRenderStatus(id, phone, false), 15000);
+        }
+
+        async function fetchAndRenderStatus(id, phone, isInitial) {
+            try {
+                const data = await api.trackBooking(id, phone);
+                document.getElementById('tracking-search').style.display = 'none';
+                document.getElementById('tracking-result').style.display = 'block';
+                
+                document.getElementById('res-id').textContent = data.id;
+                document.getElementById('res-service').textContent = data.selectedService;
+                document.getElementById('res-eta').textContent = data.estimatedArrivalTime || "Awaiting Update";
+                document.getElementById('res-tech').textContent = data.technicianName || "Awaiting Assignment";
+
+                if (data.bookingStatus !== currentStatus && !isInitial) {
+                    if (window.playJarvisSound) window.playJarvisSound();
+                    if (window.showJarvisPopup) window.showJarvisPopup("STATUS UPDATE: " + data.bookingStatus);
+                }
+                currentStatus = data.bookingStatus;
+                updateTimeline(data.bookingStatus);
+            } catch (err) {
+                if(isInitial) {
+                    document.getElementById('track-error').textContent = "DATA NOT FOUND. VERIFY CREDENTIALS.";
+                    document.getElementById('track-error').style.display = 'block';
+                }
+                if(trackingInterval) clearInterval(trackingInterval);
+            }
+        }
+
+        function updateTimeline(status) {
+            const steps = ["Pending", "Confirmed", "Technician Assigned", "On The Way", "Work Started", "Completed"];
+            const stepIds = ["step-pending", "step-confirmed", "step-technician-assigned", "step-on-the-way", "step-work-started", "step-completed"];
+            
+            document.getElementById('step-cancelled').style.display = 'none';
+            document.querySelector('.timeline-container').style.display = 'block';
+
+            if (status === 'Cancelled') {
+                document.querySelector('.timeline-container').style.display = 'none';
+                document.getElementById('step-cancelled').style.display = 'block';
+                return;
+            }
+
+            let currentIndex = steps.indexOf(status);
+            if (currentIndex === -1) currentIndex = 0; // Default Pending
+
+            stepIds.forEach((id, index) => {
+                const el = document.getElementById(id);
+                el.className = "timeline-step"; // Reset
+                if (index < currentIndex) {
+                    el.classList.add("completed");
+                } else if (index === currentIndex) {
+                    el.classList.add("active");
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login | ElectroFix</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .login-card {
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            animation: glow 2s infinite alternate;
+        }
+        @keyframes glow {
+            from { box-shadow: 0 0 10px var(--accent); }
+            to { box-shadow: 0 0 20px var(--accent), 0 0 30px var(--accent); }
+        }
+    </style>
+<link rel="manifest" href="manifest.json">
+</head>
+<body>
+    <div class="login-container">
+        <div class="glass-card login-card">
+            <h2 style="margin-bottom: 30px; color: var(--accent);">Admin Panel</h2>
+            <input type="password" id="pin-input" class="form-control" placeholder="Enter PIN">
+            <button id="login-btn" class="btn" style="width: 100%;">Login</button>
+            <p id="error-msg" style="color: #ff4d4d; margin-top: 15px; display: none;"></p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('login-btn').addEventListener('click', () => {
+            const pin = document.getElementById('pin-input').value;
+            if (pin === 'EFX2026') {
+                sessionStorage.setItem('admin_auth', 'true');
+                window.location.href = 'admindashboard.html';
+            } else {
+                const errorMsg = document.getElementById('error-msg');
+                errorMsg.textContent = 'Invalid PIN. Access Denied.';
+                errorMsg.style.display = 'block';
+                // Shake animation
+                const card = document.querySelector('.login-card');
+                card.style.transform = 'translateX(-10px)';
+                setTimeout(() => card.style.transform = 'translateX(10px)', 100);
+                setTimeout(() => card.style.transform = 'translateX(-10px)', 200);
+                setTimeout(() => card.style.transform = 'translateX(0)', 300);
+            }
+        });
+    </script>
+</body>
+</html>

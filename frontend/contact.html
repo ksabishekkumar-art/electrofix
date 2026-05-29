@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us | ElectroFix</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+    <div id="particles-js"></div>
+    <nav>
+        <div class="logo">Electro<span>Fix</span></div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="portfolio.html">Portfolio</a></li>
+            <li><a href="reviews.html">Reviews</a></li>
+            <li><a href="contact.html" class="active">Contact</a></li>
+            <li><a href="tracking.html">Track Booking</a></li>
+        </ul>
+        <div class="hamburger"><i class="fas fa-bars"></i></div>
+    </nav>
+    <div class="header-spacer"></div>
+
+    <section>
+        <h2 class="section-title">Contact <span>Us</span></h2>
+        <div style="display: flex; flex-wrap: wrap; gap: 40px; justify-content: center;">
+            <div class="glass-card reveal hover-glow" style="flex: 1; min-width: 300px; max-width: 500px;">
+                <h3>Get In Touch</h3>
+                <p style="color:var(--text-muted); margin-bottom: 20px;">Fill out the form to request an appointment or ask a question.</p>
+                <form id="contact-form">
+                    <input type="text" id="contact-name" class="form-control" placeholder="Your Name" required>
+                    <input type="email" id="contact-email" class="form-control" placeholder="Your Email (Optional)">
+                    <input type="text" id="contact-phone" class="form-control" placeholder="Phone Number" required>
+                    <textarea id="contact-message" class="form-control" placeholder="How can we help?" rows="4" required></textarea>
+                    <button type="submit" class="btn ripple-btn" style="width: 100%;">Send Message</button>
+                    <p id="contact-status" style="margin-top: 15px; color: #25D366; display: none;">Message sent successfully!</p>
+                </form>
+            </div>
+            
+            <div class="glass-card reveal hover-glow" style="animation-delay:0.2s; flex: 1; min-width: 300px; max-width: 400px; display: flex; flex-direction: column; gap: 20px;">
+                <div>
+                    <h3 style="color:var(--accent);">Address</h3>
+                    <p>Pavithiramputhur, Namakkal, Tamil Nadu</p>
+                </div>
+                <div>
+                    <h3 style="color:var(--accent);">Phone</h3>
+                    <p>+91 6379012099</p>
+                </div>
+                <div>
+                    <h3 style="color:var(--accent);">Email</h3>
+                    <p>Kabishekks@gmail.com</p>
+                </div>
+                <div>
+                    <h3 style="color:var(--accent);">Working Hours</h3>
+                    <p>Available Every Day — 8:00 AM to 8:00 PM</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        document.getElementById('contact-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                name: document.getElementById('contact-name').value,
+                email: document.getElementById('contact-email').value,
+                phone: document.getElementById('contact-phone').value,
+                message: document.getElementById('contact-message').value
+            };
+            try {
+                await api.createContact(data);
+                document.getElementById('contact-form').reset();
+                document.getElementById('contact-status').style.display = 'block';
+                setTimeout(() => document.getElementById('contact-status').style.display = 'none', 5000);
+            } catch (error) {
+                alert("Failed to send message. Please try again.");
+            }
+        });
+    </script>
+</body>
+</html>

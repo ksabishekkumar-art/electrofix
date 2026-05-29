@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline | ElectroFix</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { display: flex; justify-content: center; align-items: center; height: 100vh; text-align: center; }
+        .offline-box { max-width: 400px; padding: 40px; border: 1px solid var(--stark-red); box-shadow: 0 0 30px rgba(255,59,48,0.2); }
+        .offline-icon { font-size: 60px; color: var(--stark-red); margin-bottom: 20px; animation: arcReactorPulse 2s infinite alternate; }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+    <div class="glass-card offline-box reveal">
+        <div class="offline-icon"><i class="fas fa-wifi"></i></div>
+        <h2 style="color:var(--arc-blue); margin-bottom:15px;">SYSTEM OFFLINE</h2>
+        <p style="color:var(--text-muted); margin-bottom:20px;">Connection to the mainframe has been lost. Please verify your network to restore JARVIS capabilities.</p>
+        <button class="btn ripple-btn" onclick="window.location.reload()" style="width:100%;"><i class="fas fa-sync"></i> RECONNECT</button>
+    </div>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
