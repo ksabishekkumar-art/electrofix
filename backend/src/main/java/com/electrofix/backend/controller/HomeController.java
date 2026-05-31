@@ -25,4 +25,12 @@ public class HomeController {
         response.put("status", "UP");
         return response;
     }
+
+    @GetMapping("/api/health")
+    public Map<String, String> apiHealth() {
+        Map<String, String> response = new HashMap<>();
+        response.put("status", "UP");
+        response.put("service", "ElectroFix Backend");
+        return response;
+    }
 }

@@ -1,6 +1,6 @@
 // Environment Config
 const ENV = "production"; // Switch to 'development' for local testing
-const API_BASE_URL = ENV === "production" ? "https://electrofix-backend.onrender.com/api" : "http://localhost:8080/api";
+const API_BASE_URL = ENV === "production" ? "https://electrofix-backend-pwhi.onrender.com/api" : "http://localhost:8080/api";
 
 function showNetworkError(message) {
     if (window.showJarvisPopup) {
