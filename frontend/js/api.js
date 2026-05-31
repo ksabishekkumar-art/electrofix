@@ -10,6 +10,18 @@ function showNetworkError(message) {
     }
 }
 
+window.getImageUrl = (url) => {
+    if (!url) return '';
+    const baseUrl = ENV === "production" ? "https://electrofix-backend-pwhi.onrender.com" : "http://localhost:8080";
+    if (url.includes('localhost:8080')) {
+        return url.replace('http://localhost:8080', baseUrl);
+    }
+    if (!url.startsWith('http')) {
+        return baseUrl + (url.startsWith('/') ? url : '/' + url);
+    }
+    return url;
+};
+
 const api = {
     // Services
     getServices: async () => {

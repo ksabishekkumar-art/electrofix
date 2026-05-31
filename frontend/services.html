@@ -57,14 +57,14 @@
             const services = await api.getServices();
             container.innerHTML = services.map(s => `
                 <div class="glass-card reveal">
-                    ${s.imageUrl ? `<img src="${s.imageUrl}" alt="${s.name}" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px; margin-bottom: 15px;">` : ''}
-                    <h3>${s.name}</h3>
-                    <p style="color:var(--text-muted); margin: 10px 0;">${s.description}</p>
-                    <p style="color:var(--accent); font-weight:bold; font-size: 1.2rem;">₹${s.price}</p>
+                    ${s.imageUrl ? `<img src="${window.getImageUrl(s.imageUrl)}" alt="${s.name || ''}" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px; margin-bottom: 15px;">` : ''}
+                    <h3>${s.name || 'Unnamed Service'}</h3>
+                    <p style="color:var(--text-muted); margin: 10px 0;">${s.description || ''}</p>
+                    <p style="color:var(--accent); font-weight:bold; font-size: 1.2rem;">₹${s.price || 0}</p>
                     <button class="btn ripple-btn" style="margin-top: 15px; width: 100%;" onclick="toggleBookingForm(${s.id})">Book Now</button>
                     
                     <div id="booking-form-${s.id}" class="booking-form">
-                        <form onsubmit="submitBooking(event, ${s.id}, '${s.name.replace(/'/g, "\\'")}')">
+                        <form onsubmit="submitBooking(event, ${s.id}, '${(s.name || '').replace(/'/g, "\\'")}')">
                             <input type="text" id="name-${s.id}" class="form-control" placeholder="Your Name" required>
                             <input type="text" id="phone-${s.id}" class="form-control" placeholder="Phone Number" required>
                             <input type="text" id="address-${s.id}" class="form-control" placeholder="Address" required>

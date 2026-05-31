@@ -142,7 +142,7 @@ async function loadPublicServices(container) {
 
         container.innerHTML = services.map((service, index) => `
             <div class="glass-card service-card reveal hover-glow" style="animation-delay: ${index * 0.1}s">
-                ${service.imageUrl ? `<img src="${service.imageUrl}" alt="${service.name}" loading="lazy" style="width:100%; height:200px; object-fit:cover; border-radius:2px; margin-bottom:15px; border: 1px solid var(--arc-blue);">` : ''}
+                ${service.imageUrl ? `<img src="${window.getImageUrl(service.imageUrl)}" alt="${service.name}" loading="lazy" style="width:100%; height:200px; object-fit:cover; border-radius:2px; margin-bottom:15px; border: 1px solid var(--arc-blue);">` : ''}
                 <h3 style="color:var(--accent);">${service.name}</h3>
                 <p style="color:var(--text-muted); margin: 10px 0;">${service.description}</p>
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px;">

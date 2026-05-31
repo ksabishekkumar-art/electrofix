@@ -121,7 +121,7 @@ async function loadServicesAdmin() {
     if (services.length === 0) { tbody.innerHTML = '<tr><td colspan="6">No services found.</td></tr>'; return; }
     tbody.innerHTML = services.map(s => `<tr>
         <td>${s.id}</td>
-        <td>${s.imageUrl ? `<img src="${s.imageUrl}" width="50" height="50" style="border-radius:4px; object-fit:cover;">` : 'No Image'}</td>
+        <td>${s.imageUrl ? `<img src="${window.getImageUrl(s.imageUrl)}" width="50" height="50" style="border-radius:4px; object-fit:cover;">` : 'No Image'}</td>
         <td>${s.name}</td><td>${s.category}</td><td>₹${s.price}</td>
         <td>
             <button class="action-btn edit-btn" onclick="editService(${s.id}, '${s.name.replace(/'/g, "\\'")}', ${s.price}, '${s.category.replace(/'/g, "\\'")}', '${s.description.replace(/'/g, "\\'")}')">Edit</button>
@@ -157,11 +157,13 @@ async function loadPortfolioAdmin() {
     const portfolio = await api.getPortfolio();
     if (portfolio.length === 0) { tbody.innerHTML = '<tr><td colspan="5">No portfolio projects found.</td></tr>'; return; }
     tbody.innerHTML = portfolio.map(p => {
-        let mediaHtml = 'No Image';
+        let mediaHtml = 'No Media';
         if (p.imageUrls && p.imageUrls.length > 0) {
-            mediaHtml = `<img src="${p.imageUrls[0]}" width="50" height="50" style="border-radius:4px; object-fit:cover;">`;
+            mediaHtml = `<img src="${window.getImageUrl(p.imageUrls[0])}" width="50" height="50" style="border-radius:4px; object-fit:cover;">`;
         } else if (p.imageUrl) {
-            mediaHtml = `<img src="${p.imageUrl}" width="50" height="50" style="border-radius:4px; object-fit:cover;">`;
+            mediaHtml = `<img src="${window.getImageUrl(p.imageUrl)}" width="50" height="50" style="border-radius:4px; object-fit:cover;">`;
+        } else if (p.videoUrl) {
+            mediaHtml = `<video src="${window.getImageUrl(p.videoUrl)}" width="50" height="50" style="border-radius:4px; object-fit:cover;"></video>`;
         }
         
         return `<tr>
@@ -275,7 +277,7 @@ async function loadReviewsAdmin() {
     if (data.length === 0) { tbody.innerHTML = '<tr><td colspan="6">No reviews found.</td></tr>'; return; }
     tbody.innerHTML = data.map(r => `<tr>
         <td>${r.id}</td>
-        <td>${r.profileImage ? `<img src="${r.profileImage}" width="40" height="40" style="border-radius:50%; object-fit:cover;">` : 'N/A'}</td>
+        <td>${r.profileImage ? `<img src="${window.getImageUrl(r.profileImage)}" width="40" height="40" style="border-radius:50%; object-fit:cover;">` : 'N/A'}</td>
         <td>${r.customerName}</td><td>${r.rating} / 5</td>
         <td>${r.approved ? '<span style="color:var(--accent);">Approved</span>' : '<span style="color:yellow;">Pending</span>'}</td>
         <td>

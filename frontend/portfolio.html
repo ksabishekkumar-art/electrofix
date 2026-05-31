@@ -49,15 +49,17 @@
                     if (p.imageUrls && p.imageUrls.length > 0) {
                         mediaHtml += '<div class="portfolio-slider">';
                         p.imageUrls.forEach(url => {
-                            mediaHtml += `<img src="${url}" style="height:150px; width:auto;" onclick="window.openMediaModal('image', '${url}')">`;
+                            mediaHtml += `<img src="${window.getImageUrl(url)}" style="height:150px; width:auto; cursor:pointer;" onclick="window.openMediaModal('image', '${window.getImageUrl(url)}')">`;
                         });
                         mediaHtml += '</div>';
                     } else if (p.imageUrl) {
-                        mediaHtml += `<img src="${p.imageUrl}" style="width:100%; height:200px; object-fit:cover; border-radius:8px; margin-bottom:15px; cursor:pointer;" onclick="window.openMediaModal('image', '${p.imageUrl}')">`;
+                        mediaHtml += `<img src="${window.getImageUrl(p.imageUrl)}" style="width:100%; height:200px; object-fit:cover; border-radius:8px; margin-bottom:15px; cursor:pointer;" onclick="window.openMediaModal('image', '${window.getImageUrl(p.imageUrl)}')">`;
+                    } else if (p.videoUrl) {
+                        mediaHtml += `<video src="${window.getImageUrl(p.videoUrl)}" controls style="width:100%; height:200px; object-fit:cover; border-radius:8px; margin-bottom:15px; cursor:pointer;" onclick="window.openMediaModal('video', '${window.getImageUrl(p.videoUrl)}')"></video>`;
                     }
                     
-                    if (p.videoUrl) {
-                        mediaHtml += `<div style="margin-top:10px;"><button class="btn btn-outline" style="width:100%; padding:5px;" onclick="window.openMediaModal('video', '${p.videoUrl}')"><i class="fas fa-play"></i> Watch Project Video</button></div>`;
+                    if (p.videoUrl && !mediaHtml.includes('video')) {
+                        mediaHtml += `<div style="margin-top:10px;"><button class="btn btn-outline" style="width:100%; padding:5px;" onclick="window.openMediaModal('video', '${window.getImageUrl(p.videoUrl)}')"><i class="fas fa-play"></i> Watch Project Video</button></div>`;
                     }
 
                     return `

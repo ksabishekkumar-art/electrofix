@@ -64,7 +64,7 @@
         let currentRating = 0;
         document.querySelectorAll('.star-rating i').forEach(star => {
             star.addEventListener('click', (e) => {
-                currentRating = parseInt(e.target.getAttribute('data-val'));
+                currentRating = parseInt(star.getAttribute('data-val'));
                 document.getElementById('review-rating').value = currentRating;
                 document.querySelectorAll('.star-rating i').forEach(s => {
                     if (parseInt(s.getAttribute('data-val')) <= currentRating) s.classList.add('active');
@@ -75,7 +75,14 @@
 
         document.getElementById('review-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            if (!currentRating) { alert("Please select a star rating."); return; }
+            if (!currentRating) { 
+                const statusEl = document.getElementById('review-status');
+                statusEl.innerHTML = '⚠️ Please select a star rating';
+                statusEl.style.color = '#ffaa00';
+                statusEl.style.display = 'block';
+                setTimeout(() => { statusEl.style.display = 'none'; statusEl.style.color = '#25D366'; }, 4000);
+                return; 
+            }
             
             const formData = new FormData();
             formData.append('customerName', document.getElementById('review-name').value);
@@ -89,10 +96,16 @@
                 document.getElementById('review-form').reset();
                 document.querySelectorAll('.star-rating i').forEach(s => s.classList.remove('active'));
                 currentRating = 0; document.getElementById('review-rating').value = '';
-                document.getElementById('review-status').style.display = 'block';
-                setTimeout(() => document.getElementById('review-status').style.display = 'none', 5000);
+                const statusEl = document.getElementById('review-status');
+                statusEl.innerHTML = '✅ Review submitted successfully';
+                statusEl.style.display = 'block';
+                setTimeout(() => statusEl.style.display = 'none', 4000);
             } catch (error) {
-                alert("Failed to submit review.");
+                const statusEl = document.getElementById('review-status');
+                statusEl.innerHTML = '❌ Failed to submit review';
+                statusEl.style.color = '#ff4444';
+                statusEl.style.display = 'block';
+                setTimeout(() => { statusEl.style.display = 'none'; statusEl.style.color = '#25D366'; }, 4000);
             }
         });
 
@@ -108,7 +121,7 @@
                 }
                 container.innerHTML = approved.map((r, index) => `
                     <div class="glass-card reveal hover-glow" style="animation-delay: ${index * 0.1}s; display:flex; flex-direction:column; align-items:center; text-align:center;">
-                        <img src="${r.profileImage ? r.profileImage : 'https://via.placeholder.com/80'}" style="width:80px; height:80px; border-radius:50%; object-fit:cover; margin-bottom:15px; border:2px solid var(--accent);">
+                        <img src="${r.profileImage ? window.getImageUrl(r.profileImage) : 'https://via.placeholder.com/80'}" style="width:80px; height:80px; border-radius:50%; object-fit:cover; margin-bottom:15px; border:2px solid var(--accent);">
                         <h4>${r.customerName}</h4>
                         <span style="font-size:12px; color:var(--text-muted); margin-bottom:5px;">${window.formatDate ? window.formatDate(r.createdAt) : ''}</span>
                         <div style="color:var(--accent); margin:10px 0;">

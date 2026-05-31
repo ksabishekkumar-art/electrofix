@@ -38,7 +38,7 @@ public class FileUploadService {
         
         Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-        return "http://localhost:8080/uploads/" + subDir + "/" + newFilename;
+        return "/uploads/" + subDir + "/" + newFilename;
     }
 
     public void deleteFile(String fileUrl) {
