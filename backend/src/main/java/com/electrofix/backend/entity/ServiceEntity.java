@@ -33,4 +33,11 @@ public class ServiceEntity {
 
     @Column(name = "created_at")
     private java.time.LocalDateTime createdAt = java.time.LocalDateTime.now();
+
+    public String getImageUrl() {
+        if (this.imageUrl != null && this.imageUrl.startsWith("http://localhost:8080")) {
+            return this.imageUrl.replace("http://localhost:8080", "");
+        }
+        return this.imageUrl;
+    }
 }

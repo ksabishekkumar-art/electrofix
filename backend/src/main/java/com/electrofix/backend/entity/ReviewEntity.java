@@ -33,4 +33,11 @@ public class ReviewEntity {
     
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    public String getProfileImage() {
+        if (this.profileImage != null && this.profileImage.startsWith("http://localhost:8080")) {
+            return this.profileImage.replace("http://localhost:8080", "");
+        }
+        return this.profileImage;
+    }
 }
